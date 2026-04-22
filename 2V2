@@ -1,0 +1,245 @@
+# Dogfight 2v2 — JSBSim 多智能体空战对抗框架
+
+基于 JSBSim 飞行动力学 + Gymnasium 接口的 2v2 空战对抗仿真平台。
+
+支持多智能体编队对抗，含导弹发射/制导/命中、Tacview ACMI 录制、MAPPO 强化学习训练与评估。
+
+---
+
+## 目录结构
+
+```
+dogfight_1v1/
+├── core/                          # 动力学核心
+│   ├── missile.py                 # AIM-120C / AIM-9X 导弹比例导引模型
+│   └── target_assignment.py       # 目标分配 + 编队控制 (4种队形)
+├── envs/
+│   └── combat_env_2v2.py          # 2v2 多智能体对抗环境 + SB3包装器
+├── visualization/
+│   └── multi_logger.py            # Tacview ACMI 多对象记录器
+├── ai/
+│   └── red_team_ai.py             # 红方编队 AI (长机战术 + 僚机跟随)
+├── training/
+│   └── mappo_train.py             # 2v2 MAPPO训练 (参数共享 + 课程学习)
+├── scripts/
+│   └── test_2v2.py                # 2v2 编队对抗测试
+├── run_demo.py                    # 快速启动入口
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 快速开始
+
+### 1. 安装依赖
+
+```bash
+cd dogfight_1v1
+pip install -r requirements.txt
+```
+
+### 2. 准备 JSBSim
+
+确保系统已安装 JSBSim，且 `jsbsim-master/` 目录包含 `aircraft/` 文件夹。运行时可通过 `--jsbsim_root` 指定路径，脚本会自动搜索常见位置。
+
+---
+
+## 用法
+
+### 测试: 编队对抗 (红方编队 vs 蓝方规则/随机)
+
+```bash
+# 红方梯队编队 + 激进策略 vs 蓝方追踪策略
+python run_demo.py test --red_policy aggressive --red_formation echelon \
+    --blue_policy pursuit --steps 3600 --episodes 3
+
+# 红方横队 + 能量战术 vs 蓝方随机
+python run_demo.py test --red_policy energy --red_formation line_abreast \
+    --blue_policy random --episodes 10
+```
+
+### 训练: MAPPO Agent (参数共享)
+
+```bash
+# 基础训练: 蓝方编队 PPO vs 红方直飞
+python run_demo.py train --red_policy straight --total_steps 500000 --n_envs 4
+
+# 课程学习: 从易到难逐步升级红方
+python run_demo.py train --curriculum --total_steps 1000000 --n_envs 4
+
+# 团队奖励 + 奖励求和 (鼓励协同)
+python run_demo.py train --red_policy aggressive --total_steps 500000 \
+    --team_reward_weight 0.2 --reward_agg sum
+```
+
+### TensorBoard 查看训练曲线
+
+```bash
+tensorboard --logdir=logs/training_2v2
+```
+
+---
+
+## 环境特性
+
+### 动作空间 (每 Agent 5维, 共 2 架蓝机 = 10维拼接)
+
+| 维度 | 控制量 | 范围 |
+|------|--------|------|
+| 0 | 副翼 (aileron) | [-1, 1] |
+| 1 | 升降舵 (elevator) | [-1, 1] |
+| 2 | 方向舵 (rudder) | [-1, 1] |
+| 3 | 油门 (throttle) | [-1, 1] → 映射到 [0, 1] |
+| 4 | 武器 (weapon) | >0.5 发射导弹 |
+
+### 观察空间 (固定 31维/飞机)
+
+| 部分 | 维度 | 内容 |
+|------|------|------|
+| 自身状态 | 8 | 高度、速度、滚转、俯仰、偏航率、过载、导弹数、存活 |
+| 最近2敌机 | 14 | 距离(sin/cos ATA/AA)、高度差、速度 (每架7维) |
+| 最近1友机 | 4 | 相对距离、方位、高度差、速度 |
+| 最近1导弹 | 4 | 距离、方位、速度、寿命 |
+| 全局 | 1 | 存活敌机比例 |
+
+**固定维度策略**: 无论战场上有多少飞机，观察维度恒为 31 维。不足目标时补零。
+
+---
+
+## 初始态势
+
+| 态势 | 描述 |
+|------|------|
+| head_to_head | 编队对头相遇，相距 10nm |
+| tail_chase | 尾追，蓝方追红方 |
+| offensive | 蓝方占攻击位 |
+| random | 随机选取 |
+
+---
+
+## 终止条件
+
+- 一方全部被击落 / 导弹命中
+- 多机碰撞
+- 坠毁/失速
+- 超时 (默认 3600 步 = 60 秒)
+
+---
+
+## 导弹系统
+
+| 型号 | 类型 | 速度 | 最大 G | 射程 | 制导 |
+|------|------|------|--------|------|------|
+| AIM-120C | 中距弹 | Mach ~4.2 | 25G | 30nm | 主动雷达 |
+| AIM-9X | 近距弹 | Mach ~3.3 | 35G | 10nm | 红外制导 |
+
+---
+
+## 编队队形
+
+| 队形 | 描述 |
+|------|------|
+| echelon | 梯队 (僚机在长机侧后方) |
+| line_abreast | 横队 (左右排列) |
+| vic | 楔队 (V字形) |
+| trail | 纵队 (前后排列) |
+
+---
+
+## 智能体设计
+
+### 红方编队 AI
+
+- **编队控制**: 长机做战术机动，僚机用 PID 保持队形
+- **目标分配**: 距离优先 + 负载均衡，避免多机追同一目标
+- **状态机**: 巡逻→交战→防御→撤离
+- **角色区分**: 第一架飞机为长机，其余为僚机
+
+### 蓝方 (训练对象)
+
+**参数共享 MAPPO** —— 所有蓝机共用一个策略网络：
+
+- **输入**: 每架飞机各自的 31 维局部观察
+- **输出**: 每架飞机各自的 5 维动作
+- **训练**: 全局 Critic 评估联合动作价值
+- **执行**: 每架飞机只用自己的观察独立决策
+
+### 奖励设计
+
+**个体奖励**:
+- 存活(+0.1)
+- 角度优势(+0.6)
+- 距离奖励(+0.15)
+- 射击窗口(+1.5)
+- 能量(+0.05)
+
+**团队奖励**:
+- 编队保持 (友机距离 1~5nm 最高)
+- 击杀共享 (+20 同阵营)
+
+**击杀**: +80 (射手), +20 (队友)
+
+**被击落**: -20 (全队)
+
+---
+
+## 训练配置建议
+
+```bash
+# 阶段 1: 基础编队对抗
+python run_demo.py train --red_policy straight --total_steps 500000 --n_envs 4
+
+# 阶段 2: 课程学习 (编队协同)
+python run_demo.py train --curriculum --total_steps 1000000 --n_envs 4
+
+# 阶段 3: 激进对手 + 团队奖励
+python run_demo.py train --red_policy aggressive --total_steps 500000 \
+    --team_reward_weight 0.2 --reward_agg sum
+```
+
+---
+
+## 日志与评估
+
+### TensorBoard 指标
+
+- `rollout/ep_rew_mean`: 每局平均奖励
+- `train/policy_gradient_loss`: 策略损失
+- `train/value_loss`: 价值损失
+- `train/entropy_loss`: 探索度
+- `train/approx_kl`: 策略变化
+
+### CSV 文件
+
+`training_log.csv` 每 10 个 episode 记录一次：
+
+```csv
+timesteps,episode,ep_reward_mean,ep_length_mean,policy_loss,value_loss,...
+```
+
+### Tacview 回放
+
+所有含 `enable_tacview=True` 的运行都会生成 `.acmi` 文件，位于 `logs/` 目录。
+
+用 Tacview Advanced 打开即可观看：
+
+- 红蓝双方 F-16 编队飞行轨迹
+- 导弹发射、飞行、命中全过程
+- 编队队形变换
+
+---
+
+## 扩展方向
+
+- **NvN 异构智能体**: 长机/僚机角色区分，不同策略网络
+- **注意力机制**: 处理可变数量敌机
+- **自博弈训练**: 红蓝双方同时训练
+- **更多机型**: F-15、Su-27 等
+- **电子对抗**: 箔条、干扰弹
+
+---
+
+## 作者
+
+**NetherWind Studio**
