@@ -12,3 +12,12 @@ results/
 # OS
 Thumbs.db
 .DS_Store
+
+# Source protection
+*.c
+build/
+.source_backup/
+setup_compile.py
+compile_helper.py
+Thumbs.db
+.DS_Store
