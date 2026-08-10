@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+
+# Training artifacts (created by running the code)
+models/
+logs/
+runs/
+results/
+*.pt
+
+# OS
+Thumbs.db
+.DS_Store
