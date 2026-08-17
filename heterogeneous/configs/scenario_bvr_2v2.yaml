@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+# Scenario: BVR formation engagement, red 2x F-16 vs blue 2x F-16 (T1 制空)
+# 异构变体（红方 F-16×1 + UCAV×1）在同目录其他场景中定义。
+# All positions in Netherwind pseudo-NED metres; headings in radians
+# (0 = East, +pi/2 = North).
+# ---------------------------------------------------------------------------
+
+scenario:
+  name: bvr_2v2
+  task: T1_air_superiority
+  physics_hz: 10
+  decision_interval_steps: 30        # L4 决策节奏（SMDP）
+  max_steps: 2400                    # 240 s episode cap
+
+  win_conditions:
+    annihilation: true
+    timeout:
+      require_net_kill_lead: true
+      require_contact_m: 12000.0     # 终局最小间距门
+      require_survivor_parities: true
+    draw_counts_as_loss: false       # 平局单列统计
+
+  red:
+    platforms: [f16_fighter, f16_fighter]
+    spawn:
+      # [dx, dy, dz, psi, speed]
+      - [0,    -6000, -3100, 1.5708, 230]
+      - [500,  -5400, -2950, 1.62,   220]
+    jitter_m: [200, 100, 100]        # 出生扰动（种子流控制）
+
+  blue:
+    platforms: [f16_fighter, f16_fighter]
+    difficulty: L3_veteran           # 对手质量档（见 ARCHITECTURE §6）
+    spawn:
+      - [0,    6000, -3100, -1.5708, 230]
+      - [500,  5400, -2950, -1.62,   220]
+    jitter_m: [200, 100, 100]
+
+  arena:
+    floor_m: 30.0                    # 坠地判负高度（AGL）
+    ceiling_m: 16000.0               # 软上限（超出不判负，仅塑形参考）
+    disengage_range_m: 50000.0       # 双方最小间距超过则判脱离平局

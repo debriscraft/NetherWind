@@ -1,0 +1,6 @@
+torch>=2.0
+numpy>=2.0
+pyyaml>=6.0
+matplotlib>=3.8
+jsbsim>=1.2
+gym-jsbsim

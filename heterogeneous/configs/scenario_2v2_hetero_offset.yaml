@@ -1,0 +1,43 @@
+# Offset-geometry variant: blue spawns 9 km to the flank on a
+# crossing heading -> detection (not cueing) becomes the bottleneck.
+# Eval-only probe of the track-sharing mechanism.
+# ---------------------------------------------------------------------------
+# Training variant of scenario_2v2_hetero (Phase 4)
+#   * physics_hz 10 (dt=0.1 s): timestep invariance vs 20 Hz was verified
+#     in tests/test_dynamics.py (T3), so training at 10 Hz halves wall
+#     time without changing the dynamics;
+#   * red has NO scripted_level: the red team is agent-controlled;
+#   * everything else identical to the evaluation scenario, so policies
+#     transfer directly to the 20 Hz evaluation runs.
+# ---------------------------------------------------------------------------
+
+scenario:
+  name: hetero_2v2_offset
+  task: T1_air_superiority
+  physics_hz: 10
+  max_steps: 3000                     # 300 s episode cap
+
+  win_conditions:
+    annihilation: true
+
+  red:
+    formation: spread
+    platforms: [f16_fighter, ov10_ucav]
+    spawn:
+      - [0,    -15000, -3500,  1.5708, 230]
+      - [-500, -15700, -3450,  1.5708, 70]
+    jitter_m: [300, 200, 100]
+
+  blue:
+    formation: wedge
+    difficulty: L2                    # default; train script may override
+    platforms: [f16_fighter, ov10_ucav]
+    spawn:
+      - [9000,  15000, -3500, -2.10, 230]
+      - [9600,  15700, -3450, -2.15, 70]
+    jitter_m: [2000, 1500, 500]
+
+  arena:
+    floor_m: 30.0
+    ceiling_m: 16000.0
+    disengage_range_m: 60000.0

@@ -1,0 +1,50 @@
+[
+ {
+  "name": "hasac_s0",
+  "kind": "hasac",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\hasac_s0\\models\\step_0600000",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 850000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": false
+ },
+ {
+  "name": "hasac_s1",
+  "kind": "hasac",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\hasac_s1\\models\\step_0525000",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 851000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": false
+ },
+ {
+  "name": "hasac_s2",
+  "kind": "hasac",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\hasac_s2\\models\\step_0500000",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 852000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": false
+ }
+]

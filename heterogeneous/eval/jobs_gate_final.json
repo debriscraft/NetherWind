@@ -1,0 +1,50 @@
+[
+ {
+  "name": "gate_s0_final_on",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s0\\models\\iter_00500",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 830000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": true
+ },
+ {
+  "name": "gate_s1_final_on",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s1\\models\\iter_00500",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 831000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": true
+ },
+ {
+  "name": "gate_s2_final_on",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s2\\models\\iter_00500",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 832000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": true
+ }
+]

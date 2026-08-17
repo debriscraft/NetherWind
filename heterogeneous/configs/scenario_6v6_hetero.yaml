@@ -1,0 +1,49 @@
+# ---------------------------------------------------------------------------
+# Scalability probe: 6v6 heterogeneous formation engagement
+#   red  = 4 x F-16A + 2 x OV-10 UCAV (MARL agents, role-conditioned)
+#   blue = 6 x F-16A (scripted adversary, quality level configurable)
+# Used for the scalability study (N-agent extension of the 2v2 scenario).
+# ---------------------------------------------------------------------------
+
+scenario:
+  name: hetero_6v6
+  task: T1_air_superiority
+  physics_hz: 20
+  max_steps: 6000                     # 300 s episode cap
+
+  win_conditions:
+    annihilation: true
+
+  red:
+    formation: spread
+    scripted_level: L2
+    platforms: [f16_fighter, f16_fighter, f16_fighter, f16_fighter,
+                ov10_ucav, ov10_ucav]
+    spawn:
+      # [x, y, z(down-neg), psi(rad), speed(m/s)]
+      - [0,     -15000, -3500,  1.5708, 230]
+      - [600,   -15500, -3500,  1.5708, 230]
+      - [-600,  -15500, -3500,  1.5708, 230]
+      - [1200,  -16000, -3550,  1.5708, 230]
+      - [-1200, -16200, -3450,  1.5708, 70]
+      - [-1800, -16600, -3450,  1.5708, 70]
+    jitter_m: [300, 200, 100]
+
+  blue:
+    formation: wedge
+    difficulty: L2
+    platforms: [f16_fighter, f16_fighter, f16_fighter,
+                f16_fighter, f16_fighter, f16_fighter]
+    spawn:
+      - [0,     15000, -3500, -1.5708, 230]
+      - [600,   15600, -3450, -1.62,   220]
+      - [-600,  15600, -3450, -1.52,   220]
+      - [1200,  16200, -3500, -1.65,   230]
+      - [-1200, 16200, -3500, -1.50,   230]
+      - [0,     16800, -3550, -1.5708, 230]
+    jitter_m: [300, 200, 100]
+
+  arena:
+    floor_m: 30.0
+    ceiling_m: 16000.0
+    disengage_range_m: 60000.0

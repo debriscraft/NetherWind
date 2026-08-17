@@ -1,0 +1,9 @@
+# Unified release: see homogeneous/requirements.txt and heterogeneous/requirements.txt
+torch>=2.0
+numpy
+pyyaml
+matplotlib
+scipy
+jsbsim>=1.2
+gym-jsbsim
+gym>=0.21

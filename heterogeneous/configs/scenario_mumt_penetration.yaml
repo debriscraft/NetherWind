@@ -1,0 +1,53 @@
+# ---------------------------------------------------------------------------
+# Scenario 2 (Phase 3): MUM-T penetration vs interception
+#   red  = F-16A escort + OV-10 UCAV penetrator (recon/strike package)
+#   blue = 2 x F-16A interceptors defending the line
+#
+# Victory:
+#   * red  wins if the UCAV crosses the penetration line (y >= +3000 m)
+#     alive -- or annihilates blue;
+#   * blue wins if the UCAV is killed, if red is annihilated, or if the
+#     line holds until the episode cap (defence succeeds on timeout).
+#
+# Geometry: red starts 15 km short of the line; at UCAV transit speed
+# (~70 m/s) the dash takes ~214 s inside a 280 s cap, so blue has roughly
+# one full intercept cycle. Blue spawns 18 km from red's start line --
+# inside ITS radar from spawn, so the interceptors have the information
+# initiative and red must fight through.
+# ---------------------------------------------------------------------------
+
+scenario:
+  name: mumt_penetration
+  task: T2_mumt_penetration
+  physics_hz: 20
+  max_steps: 5600                     # 280 s episode cap
+
+  win_conditions:
+    annihilation: true
+    penetration:
+      line_y: 3000.0                  # cross y >= +3 km to win
+      direction: 1
+      penetrator_role: ucav_recon
+
+  red:
+    formation: trail                  # UCAV trails the escort
+    scripted_level: L2
+    platforms: [f16_fighter, ov10_ucav]
+    spawn:
+      - [0,    -12000, -3500,  1.5708, 230]
+      - [-300, -12400, -3300,  1.5708, 70]
+    jitter_m: [300, 200, 100]
+
+  blue:
+    formation: line
+    difficulty: L3
+    platforms: [f16_fighter, f16_fighter]
+    spawn:
+      - [0,    6000, -4000, -1.5708, 250]
+      - [800,  6800, -3900, -1.62,   240]
+    jitter_m: [300, 200, 100]
+
+  arena:
+    floor_m: 30.0
+    ceiling_m: 16000.0
+    disengage_range_m: 60000.0

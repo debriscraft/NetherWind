@@ -1,0 +1,41 @@
+[
+ {
+  "name": "hier6v6_it160",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\scale6v6_hier\\models\\iter_00160",
+  "levels": [
+   "L2",
+   "L3"
+  ],
+  "episodes": 100,
+  "seed0": 840160,
+  "config": "configs/scenario_6v6_hetero.yaml",
+  "share_tracks": true
+ },
+ {
+  "name": "hier6v6_it420",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\scale6v6_hier\\models\\iter_00420",
+  "levels": [
+   "L2",
+   "L3"
+  ],
+  "episodes": 100,
+  "seed0": 840420,
+  "config": "configs/scenario_6v6_hetero.yaml",
+  "share_tracks": true
+ },
+ {
+  "name": "hier6v6_it500",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\scale6v6_hier\\models\\iter_00500",
+  "levels": [
+   "L2",
+   "L3"
+  ],
+  "episodes": 100,
+  "seed0": 840500,
+  "config": "configs/scenario_6v6_hetero.yaml",
+  "share_tracks": true
+ }
+]

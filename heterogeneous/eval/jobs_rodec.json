@@ -1,0 +1,10 @@
+[
+  {"name": "rodec_c300k", "kind": "rode_cont",
+   "ckpt": "runs/rode_cont_s2/models/step_0300000",
+   "levels": ["L1", "L2", "L3", "L4"], "episodes": 100,
+   "seed0": 500000},
+  {"name": "rodec_c375k", "kind": "rode_cont",
+   "ckpt": "runs/rode_cont_s2/models/step_0375000",
+   "levels": ["L1", "L2", "L3", "L4"], "episodes": 100,
+   "seed0": 500000}
+]

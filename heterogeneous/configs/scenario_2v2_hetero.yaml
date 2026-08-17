@@ -1,0 +1,53 @@
+# ---------------------------------------------------------------------------
+# Scenario 1 (Phase 3): 2v2 heterogeneous formation engagement
+#   red  = F-16A (leader, air superiority) + OV-10 UCAV (recon/EW wingman)
+#   blue = F-16A + OV-10 UCAV (mirrored heterogeneous force;
+#   scripted adversary, quality level configurable L1-L4)
+#
+# Design notes:
+#   * 30 km initial separation > fighter radar (20 km) -> a genuine
+#     pre-contact transit phase exists (formation keeping is exercised);
+#   * the UCAV's 40 km wide-area surveillance sees blue FROM SPAWN, so red
+#     enjoys an asymmetric information advantage that doctrine must exploit;
+#   * the UCAV's escort jamming (jam_strength 0.35) shrinks blue's radar
+#     to 13 km while it lives;
+#   * transit speed is capped at the slowest member (70 m/s class), so the
+#     mixed package stays coherent (doctrine: formation moves with its
+#     slowest ship).
+#
+# Positions: Netherwind pseudo-NED metres [E, N, Down]; psi in radians
+# (0 = East, +pi/2 = North).
+# ---------------------------------------------------------------------------
+
+scenario:
+  name: hetero_2v2
+  task: T1_air_superiority
+  physics_hz: 20
+  max_steps: 6000                     # 300 s episode cap
+
+  win_conditions:
+    annihilation: true
+
+  red:
+    formation: spread                 # UCAV holds a wide sensor baseline
+    scripted_level: L2                # smoke-test pilot; replaced by MARL agents
+    platforms: [f16_fighter, ov10_ucav]
+    spawn:
+      # [x, y, z(down-neg), psi(rad), speed(m/s)]
+      - [0,    -15000, -3500,  1.5708, 230]
+      - [-500, -15700, -3450,  1.5708, 70]
+    jitter_m: [300, 200, 100]
+
+  blue:
+    formation: wedge
+    difficulty: L2
+    platforms: [f16_fighter, ov10_ucav]
+    spawn:
+      - [0,    15000, -3500, -1.5708, 230]
+      - [600,  15700, -3450, -1.62,    70]
+    jitter_m: [300, 200, 100]
+
+  arena:
+    floor_m: 30.0
+    ceiling_m: 16000.0
+    disengage_range_m: 60000.0

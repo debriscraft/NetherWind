@@ -1,0 +1,20 @@
+# AirCombatMARL Requirements
+
+# Core dependencies (required)
+numpy>=1.21.0
+torch>=2.0.0
+gym>=0.21.0
+gym-jsbsim>=0.1.0   # JSBSim flight dynamics (required by the compiled core)
+pyyaml>=6.0
+scipy>=1.7.0
+
+# Visualization (optional)
+pytorch3d>=0.6.0  # For 3D rendering
+matplotlib>=3.5.0
+
+# TensorBoard logging (optional)
+tensorboard>=2.8.0
+
+# Development tools (optional)
+pytest>=7.0.0
+black>=22.0.0

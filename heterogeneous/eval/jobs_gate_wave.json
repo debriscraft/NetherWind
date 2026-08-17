@@ -1,0 +1,90 @@
+[
+ {
+  "name": "gate_s0_on",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s0\\models\\iter_00040",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 800000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": true
+ },
+ {
+  "name": "gate_s1_on",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s1\\models\\iter_00080",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 801000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": true
+ },
+ {
+  "name": "gate_s2_on",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s2\\models\\iter_00340",
+  "levels": [
+   "L1",
+   "L2",
+   "L3",
+   "L4"
+  ],
+  "episodes": 100,
+  "seed0": 802000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true,
+  "pk_feature": true
+ },
+ {
+  "name": "gate_s2_off",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\rac_gate_s2\\models\\iter_00340",
+  "levels": [
+   "L2",
+   "L3"
+  ],
+  "episodes": 100,
+  "seed0": 810000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": false,
+  "pk_feature": true
+ },
+ {
+  "name": "abl_teamrew_half",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\abl_teamrew_half\\models\\iter_00260",
+  "levels": [
+   "L2",
+   "L3"
+  ],
+  "episodes": 100,
+  "seed0": 820000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true
+ },
+ {
+  "name": "abl_teamrew_double",
+  "kind": "rac_mappo",
+  "ckpt": "D:\\shi_neng_chang\\Netherwind Air Combat Simulation Platform\\AirCombatProject_Python\\AirCombatMARL_jsbsim\\paper04\\runs\\abl_teamrew_double\\models\\iter_00130",
+  "levels": [
+   "L2",
+   "L3"
+  ],
+  "episodes": 100,
+  "seed0": 820000,
+  "config": "configs/scenario_2v2_hetero_train.yaml",
+  "share_tracks": true
+ }
+]

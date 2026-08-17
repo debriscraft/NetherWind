@@ -1,0 +1,10 @@
+[
+  {"name": "romac_c050k", "kind": "roma_cont",
+   "ckpt": "runs/roma_cont_s2/models/step_0050000",
+   "levels": ["L1", "L2", "L3", "L4"], "episodes": 100,
+   "seed0": 500000},
+  {"name": "romac_c125k", "kind": "roma_cont",
+   "ckpt": "runs/roma_cont_s2/models/step_0125000",
+   "levels": ["L1", "L2", "L3", "L4"], "episodes": 100,
+   "seed0": 500000}
+]

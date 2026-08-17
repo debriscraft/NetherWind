@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# Netherwind-MARL (paper04) — heterogeneous platform definitions
+# Single source of truth for the paper's platform table.
+# All evaluation-relevant quantities are physical or doctrine-grounded.
+# ---------------------------------------------------------------------------
+
+platforms:
+
+  f16_fighter:
+    role: fighter                 # 制空/突击
+    jsbsim_model: f16             # F-16A Block-32, NASA TP-1538 wind-tunnel data
+    mass_scale: 1.00
+    thrust_scale: 1.00
+    wing_scale: 1.00
+    max_g: 9.0
+    cruise_speed_ms: 230.0        # ~450 kts class
+    stall_speed_ms: 70.0
+    ceiling_m: 15000.0
+    hp: 100.0
+    sensor:
+      radar_range_m: 20000.0      # 雷达截获
+      radar_fov_deg: 120.0
+      surveillance_range_m: 0.0
+      cue_quality: 0.0
+    weapons:
+      missiles: 4                 # 中程弹
+      missile_class: mrm
+      gun: true
+      gun_rounds: 120
+    ew:
+      jam_strength: 0.0
+
+  ov10_ucav:
+    role: ucav_recon              # 侦察/干扰/引导（低速长航时涡桨，MQ-9 级性能替身）
+    jsbsim_model: OV10            # OV-10 twin-turboprop dynamics
+    mass_scale: 1.00
+    thrust_scale: 1.00
+    wing_scale: 1.00
+    max_g: 3.5
+    cruise_speed_ms: 70.0         # ~136 kts（实测：3000m 平飞极速约 75~90 m/s，巡航留裕度）
+    stall_speed_ms: 45.0
+    ceiling_m: 7500.0
+    hp: 80.0                      # 更脆弱
+    sensor:
+      radar_range_m: 8000.0       # 自卫级截获
+      radar_fov_deg: 100.0
+      surveillance_range_m: 40000.0   # 宽域监视载荷
+      cue_quality: 0.8                # 可为队友提供高质量引导
+    weapons:
+      missiles: 0                 # 侦察构型无武器（自卫型可改 2×srm）
+      missile_class: srm
+      gun: false
+      gun_rounds: 0
+    ew:
+      jam_strength: 0.35          # 压制对方传感器截获距离 ×(1-0.35)
