@@ -49,7 +49,7 @@ cryptographic guarantee against a determined reverse-engineer.
 Train BCA in the 3v3 scenario (100 episodes smoke test):
 
 ```bash
-python train.py --algorithm bca --n_red 3 --n_blue 3 --episodes 100 \
+python launch.py train --algorithm bca --n_red 3 --n_blue 3 --episodes 100 \
     --lr 1e-4 --entropy 0.001 --blue_difficulty combat --reward_fn base \
     --eval_interval 25 --eval_episodes 20 --run_name demo
 ```
@@ -57,7 +57,7 @@ python train.py --algorithm bca --n_red 3 --n_blue 3 --episodes 100 \
 Train a baseline (identical protocol to the paper):
 
 ```bash
-python train.py --algorithm ippo --n_red 3 --n_blue 3 --episodes 1000 \
+python launch.py train --algorithm ippo --n_red 3 --n_blue 3 --episodes 1000 \
     --lr 3e-4 --entropy 0.01 --blue_difficulty combat --reward_fn base \
     --run_name ippo_demo --seed 42
 ```
@@ -66,7 +66,7 @@ Visualize a policy in the real-time 3-D battlefield (the renderer is driven
 through the training entry point; `visualizer.py` itself is a library):
 
 ```bash
-python train.py --algorithm bca --n_red 3 --n_blue 3 --episodes 5 \
+python launch.py train --algorithm bca --n_red 3 --n_blue 3 --episodes 5 \
     --blue_difficulty combat --visualize --run_name viz_demo
 ```
 

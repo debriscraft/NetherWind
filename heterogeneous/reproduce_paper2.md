@@ -12,8 +12,8 @@ identical protocol, then evaluate on the four-level scripted adversary
 ladder with paired seeds:
 
 ```bash
-python run_phase6_train.py      # trains rac_mappo, b1_mappo_nocoord, b3_ippo
-python run_ladder_eval.py       # 100 paired episodes per algorithm x level cell
+python launch.py run_phase6_train      # trains rac_mappo, b1_mappo_nocoord, b3_ippo
+python launch.py run_ladder_eval       # 100 paired episodes per algorithm x level cell
 ```
 
 Outputs land in `runs/<run_name>/` (`training_log.jsonl`, `eval.jsonl`,
@@ -24,7 +24,7 @@ Outputs land in `runs/<run_name>/` (`training_log.jsonl`, `eval.jsonl`,
    role embedding / parameter sharing / Pk gate)
 
 ```bash
-python run_ablations.py
+python launch.py run_ablations
 ```
 
 Each variant is retrained from scratch under the identical protocol and
@@ -33,7 +33,7 @@ evaluated on 100 paired episodes against L2/L3.
 ## 3. Self-play control (Section: self-play)
 
 ```bash
-python run_selfplay_eval.py
+python launch.py run_selfplay_eval
 ```
 
 Runs the mirror learned-vs-learned control (100 episodes) underlying the
@@ -42,7 +42,7 @@ doctrine-validation argument.
 ## 4. Scalability (3-vs-2 and 6-vs-6)
 
 ```bash
-python run_scale_train.py
+python launch.py run_scale_train
 ```
 
 Zero-shot transfer, fine-tuning and from-scratch conditions per scale.
@@ -50,7 +50,7 @@ Zero-shot transfer, fine-tuning and from-scratch conditions per scale.
 ## 5. Fidelity control (point-mass vs JSBSim 6-DoF)
 
 ```bash
-python run_pm_seeds.py
+python launch.py run_pm_seeds
 ```
 
 Trains and evaluates the point-mass control group behind the fidelity

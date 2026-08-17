@@ -38,11 +38,11 @@ matplotlib (see each track's `requirements.txt` for details).
 
 ```bash
 cd homogeneous
-python run_train.py --algorithm bca --n_red 3 --n_blue 3 --episodes 100 \
+python launch.py train --algorithm bca --n_red 3 --n_blue 3 --episodes 100 \
     --blue_difficulty combat --run_name demo --seed 42
 
 # real-time 3-D battlefield visualization
-python run_train.py --algorithm bca --n_red 3 --n_blue 3 --episodes 5 \
+python launch.py train --algorithm bca --n_red 3 --n_blue 3 --episodes 5 \
     --blue_difficulty combat --visualize --run_name viz_demo
 ```
 
@@ -53,13 +53,13 @@ number in Paper 1.
 
 ```bash
 cd heterogeneous
-python tests/smoke_bridge.py        # JSBSim bridge smoke test (~1 min)
-python run_phase6_train.py          # main training: RAC-MAPPO + baselines
-python run_ladder_eval.py           # 100-episode paired-seed ladder evaluation
-python run_ablations.py             # ablation variants
-python run_selfplay_eval.py         # self-play control
-python run_scale_train.py           # 3-vs-2 / 6-vs-6 scalability
-python run_pm_seeds.py              # point-mass fidelity control
+python launch.py tests.smoke_bridge        # JSBSim bridge smoke test (~1 min)
+python launch.py run_phase6_train          # main training: RAC-MAPPO + baselines
+python launch.py run_ladder_eval           # 100-episode paired-seed ladder evaluation
+python launch.py run_ablations             # ablation variants
+python launch.py run_selfplay_eval         # self-play control
+python launch.py run_scale_train           # 3-vs-2 / 6-vs-6 scalability
+python launch.py run_pm_seeds              # point-mass fidelity control
 ```
 
 See `heterogeneous/reproduce_paper2.md`.

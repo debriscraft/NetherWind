@@ -10,22 +10,22 @@ Train each algorithm for 1000 episodes, seeds 42–46:
 
 ```bash
 # BCA (ours) — mission reward only
-python train.py --algorithm bca --n_red 3 --n_blue 3 --episodes 1000 \
+python launch.py train --algorithm bca --n_red 3 --n_blue 3 --episodes 1000 \
     --lr 1e-4 --entropy 0.001 --blue_difficulty combat --reward_fn base \
     --eval_interval 50 --eval_episodes 50 --eval_deterministic \
     --save_interval 100 --run_name bca_noshape --seed 42
 
 # Baselines — identical protocol, lr 3e-4, entropy 0.01
-python train.py --algorithm {ippo,maddpg,sac,mappo,happo,mat} ... --seed 42
+python launch.py train --algorithm {ippo,maddpg,sac,mappo,happo,mat} ... --seed 42
 ```
 
 Build SWA checkpoints (average of ep600–ep1000) and re-evaluate:
 
 ```bash
-python swa_build_rev3.py
-python reeval_deterministic.py --runs bca_noshape --algo bca --suffix swa \
+python launch.py swa_build  # SWA checkpoint builder (compiled module)
+python launch.py reeval_deterministic --runs bca_noshape --algo bca --suffix swa \
     --episodes 100 --out results/reeval_bca_noshape_swa.csv
-python reeval_deterministic.py --runs ippo,maddpg,sac,mappo,happo,mat \
+python launch.py reeval_deterministic --runs ippo,maddpg,sac,mappo,happo,mat \
     --suffix swa --episodes 100 --out results/reeval_baselines_swa.csv
 ```
 
@@ -34,9 +34,9 @@ python reeval_deterministic.py --runs ippo,maddpg,sac,mappo,happo,mat \
 Extend BCA and IPPO to seeds 42–56 (same protocol), then:
 
 ```bash
-python reeval_deterministic.py --runs bca_base --algo bca --suffix swa \
+python launch.py reeval_deterministic --runs bca_base --algo bca --suffix swa \
     --episodes 100 --out results/reeval_rev_bca_swa.csv      # seeds 47–56
-python reeval_deterministic.py --runs ippo --suffix swa \
+python launch.py reeval_deterministic --runs ippo --suffix swa \
     --episodes 100 --out results/reeval_rev_ippo_swa.csv     # seeds 42–56
 ```
 
@@ -59,17 +59,17 @@ then SWA + `reeval_deterministic.py` as above (`--algo bca` for all variants;
 ## 4. Fairness check (Section 6.2)
 
 ```bash
-python train.py --algorithm ippo --lr 1e-4 --entropy 0.001 ... --run_name ippo_lr1e4
-python reeval_deterministic.py --runs ippo_lr1e4 --algo ippo --suffix swa \
+python launch.py train --algorithm ippo --lr 1e-4 --entropy 0.001 ... --run_name ippo_lr1e4
+python launch.py reeval_deterministic --runs ippo_lr1e4 --algo ippo --suffix swa \
     --episodes 100 --out results/reeval_rev_ippo_lr1e4_swa.csv
 ```
 
 ## 5. Opponent robustness (Section 6.x)
 
 ```bash
-python reeval_deterministic.py --runs bca_noshape --algo bca --suffix swa \
+python launch.py reeval_deterministic --runs bca_noshape --algo bca --suffix swa \
     --episodes 100 --difficulty easy     --out results/reeval_robust_easy.csv
-python reeval_deterministic.py --runs bca_noshape --algo bca --suffix swa \
+python launch.py reeval_deterministic --runs bca_noshape --algo bca --suffix swa \
     --episodes 100 --difficulty maneuver --out results/reeval_robust_maneuver.csv
 ```
 
