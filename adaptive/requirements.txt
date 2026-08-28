@@ -1,0 +1,6 @@
+numpy>=1.26
+torch>=2.2
+gymnasium>=0.29
+jsbsim>=1.2
+matplotlib>=3.8
+pyyaml>=6.0

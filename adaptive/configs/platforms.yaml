@@ -1,0 +1,33 @@
+# ---------------------------------------------------------------------------
+# Netherwind-MARL (paper08) — HOMOGENEOUS platform definitions
+# Variable-scale formation study: ALL aircraft on BOTH teams use the same
+# airframe so that team size n is the ONLY experimental variable.
+# JSBSim airframe: F-16A Block-32 (NASA TP-1538 wind-tunnel data), same as
+# paper01/paper07, for cross-paper comparability.
+# ---------------------------------------------------------------------------
+
+platforms:
+
+  f16_fighter:
+    role: fighter
+    jsbsim_model: f16             # F-16A Block-32, NASA TP-1538 wind-tunnel data
+    mass_scale: 1.00
+    thrust_scale: 1.00
+    wing_scale: 1.00
+    max_g: 9.0
+    cruise_speed_ms: 230.0        # ~450 kts class
+    stall_speed_ms: 70.0
+    ceiling_m: 15000.0
+    hp: 100.0
+    sensor:
+      radar_range_m: 20000.0
+      radar_fov_deg: 120.0
+      surveillance_range_m: 0.0
+      cue_quality: 0.0
+    weapons:
+      missiles: 4                 # MRM loadout, identical for every aircraft
+      missile_class: mrm
+      gun: true
+      gun_rounds: 120
+    ew:
+      jam_strength: 0.0           # no EW: homogeneous study isolates n

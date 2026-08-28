@@ -1,26 +1,30 @@
 # NetherWind Air-Combat MARL Framework (Unified Release)
 
-One framework reproducing two companion studies from the Netherwind Air
-Combat Simulation Platform, both with JSBSim six-degree-of-freedom flight
+One framework reproducing three companion studies from the Netherwind Air
+Combat Simulation Platform, all with JSBSim six-degree-of-freedom flight
 dynamics in the loop:
 
 | Track | Paper | Setting | Algorithm |
 |---|---|---|---|
 | `homogeneous/` | Paper 1 | homogeneous multi-UAV formations (3v3 / 5v5) | **BCA** — Bilateral-value Curriculum Agent (graph-relational encoder + bilateral value decomposition + performance-based curriculum) |
 | `heterogeneous/` | Paper 2 | heterogeneous fighter–UCAV formations (2v2, 3v2, 6v6) | **RAC-MAPPO** — role-attentive centralised MAPPO (declared role embeddings + set-attention critic + Pk-aware cue gate) |
+| `adaptive/` | Paper 3 | variable-scale formations, one policy for 2v2–6v6, zero-shot to 10v10/20v20 | **ANA-MAPPO** — agent-number-adaptive MAPPO (entity tokenizer + permutation-equivariant set-attention actor/critic, cardinality-independent) |
 
 ## Intellectual-property notice
 
 - **Public source**: the proposed algorithms and their building blocks —
   `homogeneous/algorithms/*.py`, `homogeneous/rewards/__init__.py`,
-  `heterogeneous/sim/marl/rac_mappo.py`, plus all scenario/platform YAML
-  configs and the thin `run_*.py` entry scripts.
-- **Compiled binaries (`.pyd`)**: the simulation engine, trainers,
-  evaluation machinery and visualizers ship as CPython-3.12 C extensions
-  (Cython/MSVC build). They import and run like normal modules but their
+  `heterogeneous/sim/marl/rac_mappo.py`,
+  `adaptive/sim/marl/ana_mappo.py`, `adaptive/sim/envs/entity_tokens.py`,
+  plus all scenario/platform YAML configs.
+- **Compiled binaries**: the simulation engine, trainers, evaluation
+  machinery and visualizers ship as compiled artifacts — CPython-3.12 C
+  extensions (`.pyd`, Cython/MSVC build) in the `homogeneous/` and
+  `heterogeneous/` tracks, and CPython-3.12 bytecode (`.pyc`) in the
+  `adaptive/` track. They import and run like normal modules but their
   source is not distributed.
-- **Python 3.12.x on 64-bit Windows is mandatory** — `.pyd` binaries are
-  interpreter- and platform-specific.
+- **Python 3.12.x on 64-bit Windows is mandatory** — the compiled binaries
+  are interpreter- and platform-specific.
 
 ## Requirements
 
@@ -64,17 +68,36 @@ python launch.py run_pm_seeds              # point-mass fidelity control
 
 See `heterogeneous/reproduce_paper2.md`.
 
+### Adaptive track (Paper 3, ANA-MAPPO)
+
+```bash
+cd adaptive
+python tests/test_entity_tokens.pyc     # tokenizer & environment sanity checks
+python tests/test_ana_network.pyc       # symmetry tests: equivariance, invariance,
+                                        # cardinality independence (598,957 params)
+python smoke_env.pyc                    # one short environment rollout
+python run_gated.pyc                    # main training (gated two-phase curriculum)
+python eval_paired.pyc                  # paired evaluation vs opponent pool
+python eval_zero_shot.pyc               # zero-shot transfer across team sizes
+python eval_extrapolation.pyc           # extrapolation to 10v10 / 20v20
+python eval_baseline.pyc                # MAPPO / QMIX baselines
+python compute_pvalues.pyc              # Wilcoxon signed-rank p-values
+```
+
+See `adaptive/README.md`.
+
 ## Datasets
 
 The complete training and evaluation logs behind every table and figure of
-both papers (data only — no figures, no model weights) are published
+the three papers (data only — no figures, no model weights) are published
 alongside this framework. Paper 1's dataset is on ScienceDB
-(https://doi.org/10.57760/sciencedb.46055); Paper 2's dataset ships as the
-companion `RACMAPPO_Dataset` package.
+(https://doi.org/10.57760/sciencedb.46055); Paper 2's dataset is on ScienceDB
+(https://doi.org/10.57760/sciencedb.00zq1); Paper 3's dataset ships as the
+companion `ANAMAPPO_Dataset` package (ScienceDB deposit pending).
 
 ## Citation
 
-If you use this framework, please cite both companion papers (BibTeX entries
+If you use this framework, please cite the companion papers (BibTeX entries
 will be added upon publication).
 
 ## License
