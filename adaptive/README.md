@@ -1,21 +1,26 @@
-# ANA-MAPPO — Code Release (paper08)
+# CA-MAPPO — Code Release (paper08)
 
 Minimal, reproducible framework for the paper
-**"Agent-Number-Adaptive Multi-Agent Proximal Policy Optimization for
-Variable-Scale Air Combat"**.
+**"Cardinality-Adaptive Multi-Agent Reinforcement Learning for
+Variable-Scale Cooperative Aerial Games"**.
 
 This package lets a reviewer or reader **run** every experiment pipeline that
 produced the paper's numbers, while only the core contribution — the proposed
 algorithm and its entity tokenizer — is distributed as readable source.
 
+> Naming note: the paper names the method **CA-MAPPO** (Cardinality-Adaptive
+> MAPPO). The implementation keeps the original module/class identifiers
+> (`sim/marl/ana_mappo.py`, class `ANAMAPPO`) for compatibility with the
+> released logs; they are the same algorithm.
+
 ## What is public vs. compiled
 
 | Component | Path | Form |
 |---|---|---|
-| ANA-MAPPO algorithm (set-attention actor/critic) | `sim/marl/ana_mappo.py` | **public source (.py)** |
+| CA-MAPPO algorithm (set-attention actor/critic) | `sim/marl/ana_mappo.py` | **public source (.py)** |
 | Entity tokenizer (per-agent/per-opponent tokens) | `sim/envs/entity_tokens.py` | **public source (.py)** |
 | Entry scripts (train/eval/record/analysis) | `*.pyc` (top level) | compiled, runnable |
-| Trainers (ANA / MAPPO / QMIX), baselines | `train/*.pyc` | compiled |
+| Trainers (CA-MAPPO / MAPPO / QMIX), baselines | `train/*.pyc` | compiled |
 | Environment, dynamics, missile, visualization | `sim/**/*.pyc` | compiled |
 | Unit tests (symmetry & tokenizer) | `tests/*.pyc` | compiled, runnable |
 | JSBSim flight-dynamics engine (upstream) | `jsbsim-master/` | upstream project |
@@ -56,13 +61,14 @@ figures. Random seeds are fixed in the configs; results land under `runs/`.
 
 ```bash
 # --- main training (gated two-phase curriculum, nv2..nv6 mixed) ---
-python run_gated.pyc                       # full ANA-MAPPO training
+python run_gated.pyc                       # full CA-MAPPO training
 
 # --- evaluation protocols ---
 python eval_paired.pyc                     # paired evaluation vs opponent pool
 python eval_by_level.pyc                   # per-opponent-level win rates
 python eval_zero_shot.pyc                  # zero-shot transfer across team sizes
-python eval_extrapolation.pyc              # extrapolation to 10v10 / 20v20
+python eval_extrapolation.pyc              # extrapolation to 8v8-20v20 (K_max lifted)
+python eval_kmax_ablation.pyc              # token-budget (K_max=14) ablation, Table 12 last column
 python eval_baseline.pyc                   # MAPPO / QMIX baselines
 
 # --- per-episode analysis used in the paper ---
@@ -72,12 +78,12 @@ python compute_pvalues.pyc                 # Wilcoxon signed-rank p-values
 ```
 
 Each entry script prints its own progress and writes JSON/JSONL/NPZ logs in
-the same layout as the released dataset (`ANAMAPPO_Dataset`), so released
+the same layout as the released dataset (`CAMAPPO_Dataset`), so released
 numbers can be regenerated and diffed directly.
 
 ## Dataset
 
-The companion data release (`ANAMAPPO_Dataset/`) contains the raw training
+The companion data release (`CAMAPPO_Dataset/`) contains the raw training
 and evaluation logs (JSON/JSONL/NPZ) for every table and figure — no model
 weights, no figures. See the dataset's own README for the file map.
 

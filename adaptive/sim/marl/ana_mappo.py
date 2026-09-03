@@ -1,7 +1,12 @@
 """
 sim/marl/ana_mappo.py
 =====================
-paper08 Phase 3: ANA-MAPPO (Agent-Number-Adaptive MAPPO).
+paper08 Phase 3: CA-MAPPO (Cardinality-Adaptive MAPPO).
+
+NOTE on naming: the paper refers to the method as CA-MAPPO
+(Cardinality-Adaptive MAPPO); the implementation keeps the original
+module/class names (ana_mappo / ANAMAPPO) for compatibility with the
+released logs and checkpoints. They are the same algorithm.
 
 Architecture
 ------------
@@ -125,6 +130,37 @@ class ANAActor(nn.Module):
         return self.mu(h0), self.log_std, self.mode(h0), self.fire(h0)
 
 
+class UPDeTActor(nn.Module):
+    """UPDeT-faithful actor: parameter-shared transformer over PER-AGENT
+    observation vectors (each agent's token set flattened to one fixed-size
+    vector, zero-padded), no positional encoding, no geometric bias.
+    Shared per-agent heads decode from each agent's own embedding, so the
+    parameter count is likewise independent of team size.  This is the
+    closest executable realisation of the native UPDeT input interface
+    (per-agent feature vectors) in this environment; only the action head
+    is adapted (hybrid continuous instead of SMAC discrete)."""
+
+    def __init__(self, d=128, layers=3, heads=4, token_cap=14):
+        super().__init__()
+        self.inp = nn.Linear(TOKEN_DIM * token_cap, d)
+        self.layers = nn.ModuleList(
+            [AttnLayer(d, heads) for _ in range(layers)])
+        self.heads_n = heads
+        self.mu = nn.Linear(d, 2)
+        self.log_std = nn.Parameter(-0.5 * torch.ones(2))
+        self.mode = nn.Linear(d, 3)
+        self.fire = nn.Linear(d, 2)
+
+    def forward(self, flat, agent_mask):
+        """flat [B,S,K*D], agent_mask [B,S] (1=alive) -> per-slot dists."""
+        B, S, _ = flat.shape
+        h = self.inp(flat)
+        bias = torch.zeros(B, self.heads_n, S, device=flat.device)
+        for lyr in self.layers:
+            h = lyr(h, bias, agent_mask)
+        return self.mu(h), self.log_std, self.mode(h), self.fire(h)
+
+
 class SetCritic(nn.Module):
     """Permutation-invariant centralised critic over all agents' tokens."""
 
@@ -169,7 +205,8 @@ class ANAMAPPO:
                  gamma=0.995, gae_lambda=0.95, clip=0.2, ent_coef=0.005,
                  epochs=4, minibatch_size=512, max_grad_norm=0.5,
                  device=None, seed=0, geo_bias=True, set_critic=True,
-                 mask_train_p=0.0, d_model=128):
+                 mask_train_p=0.0, d_model=128, per_scale_norm=True,
+                 updet=False):
         torch.manual_seed(seed)
         np.random.seed(seed)
         self.gamma, self.lam, self.clip = gamma, gae_lambda, clip
@@ -177,9 +214,15 @@ class ANAMAPPO:
         self.mb, self.mgn = minibatch_size, max_grad_norm
         self.max_n, self.cap = max_n, token_cap
         self.mask_train_p = mask_train_p
+        self.per_scale_norm = per_scale_norm
+        self.updet = updet
         self.device = device or ('cuda' if torch.cuda.is_available()
                                  else 'cpu')
-        self.actor = ANAActor(d_model, geo_bias=geo_bias).to(self.device)
+        if updet:
+            self.actor = UPDeTActor(d_model,
+                                    token_cap=self.cap).to(self.device)
+        else:
+            self.actor = ANAActor(d_model, geo_bias=geo_bias).to(self.device)
         self.critic = SetCritic(d_model,
                                 set_attn=set_critic).to(self.device)
         self.opt_pi = torch.optim.Adam(self.actor.parameters(), lr=lr)
@@ -206,7 +249,19 @@ class ANAMAPPO:
         m_t = torch.as_tensor(msk, dtype=torch.float32,
                               device=self.device).reshape(E * S, K)
         with torch.no_grad():
-            mu, log_std, ml, fl = self.actor(t_t, m_t)
+            if self.updet:
+                flat = torch.as_tensor(tok, dtype=torch.float32,
+                                       device=self.device).reshape(
+                                           E, S, K * D)
+                amask = (torch.as_tensor(msk, dtype=torch.float32,
+                                         device=self.device).sum(-1) > 0
+                         ).float()
+                mu, log_std, ml, fl = self.actor(flat, amask)
+                mu = mu.reshape(E * S, 2)
+                ml = ml.reshape(E * S, 3)
+                fl = fl.reshape(E * S, 2)
+            else:
+                mu, log_std, ml, fl = self.actor(t_t, m_t)
             if deterministic:
                 cont = torch.tanh(mu)
                 mode = torch.argmax(ml, -1)
@@ -276,11 +331,16 @@ class ANAMAPPO:
         ret = adv + val[:, :, None]
 
         # per-scale advantage normalisation ------------------------------
+        # (ablatable via per_scale_norm=False: advantages are then
+        # standardised globally over the mixed batch)
         scale = np.stack([tr['scale'] for tr in self.rollout])    # [T,E]
-        for n in np.unique(scale):
-            idx = np.where(scale == n)
-            sel = adv[idx[0], idx[1], :]
-            adv[idx[0], idx[1], :] = (sel - sel.mean()) / (sel.std() + 1e-8)
+        if self.per_scale_norm:
+            for n in np.unique(scale):
+                idx = np.where(scale == n)
+                sel = adv[idx[0], idx[1], :]
+                adv[idx[0], idx[1], :] = (sel - sel.mean()) / (sel.std() + 1e-8)
+        else:
+            adv = (adv - adv.mean()) / (adv.std() + 1e-8)
 
         # per-env return target: mean over alive slots (V is env-level)
         alive3 = np.stack([tr['alive'] for tr in self.rollout])   # [T,E,S]
@@ -331,7 +391,31 @@ class ANAMAPPO:
                                      device=self.device)
                 ad = torch.nan_to_num(ad, nan=0.0, posinf=0.0, neginf=0.0)
 
-                mu, log_std, ml, fl = self.actor(o, mk)
+                if self.updet:
+                    # transformer attends across agents, so forward whole
+                    # env rows, then gather the sampled per-slot rows
+                    env_rows_a = np.unique(mb // S)
+                    pos = np.searchsorted(env_rows_a, mb // S)
+                    slot = mb % S
+                    te4 = torch.as_tensor(
+                        tok_env.reshape(-1, *tok_env.shape[2:])[env_rows_a],
+                        dtype=torch.float32, device=self.device)
+                    me4 = torch.as_tensor(
+                        msk_env.reshape(-1, *msk_env.shape[2:])[env_rows_a],
+                        dtype=torch.float32, device=self.device)
+                    Bp = te4.shape[0]
+                    flat = te4.reshape(Bp, S, K_ * D_)
+                    amask = (me4.sum(-1) > 0).float()
+                    mu_a, log_std, ml_a, fl_a = self.actor(flat, amask)
+                    pos_t = torch.as_tensor(pos, dtype=torch.long,
+                                            device=self.device)
+                    slot_t = torch.as_tensor(slot, dtype=torch.long,
+                                             device=self.device)
+                    mu = mu_a[pos_t, slot_t]
+                    ml = ml_a[pos_t, slot_t]
+                    fl = fl_a[pos_t, slot_t]
+                else:
+                    mu, log_std, ml, fl = self.actor(o, mk)
                 std = log_std.exp()
                 if not (torch.isfinite(mu).all()
                         and torch.isfinite(std).all()):

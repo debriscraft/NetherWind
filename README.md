@@ -8,7 +8,7 @@ dynamics in the loop:
 |---|---|---|---|
 | `homogeneous/` | Paper 1 | homogeneous multi-UAV formations (3v3 / 5v5) | **BCA** — Bilateral-value Curriculum Agent (graph-relational encoder + bilateral value decomposition + performance-based curriculum) |
 | `heterogeneous/` | Paper 2 | heterogeneous fighter–UCAV formations (2v2, 3v2, 6v6) | **RAC-MAPPO** — role-attentive centralised MAPPO (declared role embeddings + set-attention critic + Pk-aware cue gate) |
-| `adaptive/` | Paper 3 | variable-scale formations, one policy for 2v2–6v6, zero-shot to 10v10/20v20 | **ANA-MAPPO** — agent-number-adaptive MAPPO (entity tokenizer + permutation-equivariant set-attention actor/critic, cardinality-independent) |
+| `adaptive/` | Paper 3 | variable-scale formations, one policy for 2v2–6v6, zero-shot to 10v10/20v20 | **CA-MAPPO** — Cardinality-Adaptive MAPPO (entity tokenizer + permutation-equivariant set-attention actor/critic, cardinality-independent) |
 
 ## Intellectual-property notice
 
@@ -68,7 +68,7 @@ python launch.py run_pm_seeds              # point-mass fidelity control
 
 See `heterogeneous/reproduce_paper2.md`.
 
-### Adaptive track (Paper 3, ANA-MAPPO)
+### Adaptive track (Paper 3, CA-MAPPO)
 
 ```bash
 cd adaptive
@@ -79,7 +79,8 @@ python smoke_env.pyc                    # one short environment rollout
 python run_gated.pyc                    # main training (gated two-phase curriculum)
 python eval_paired.pyc                  # paired evaluation vs opponent pool
 python eval_zero_shot.pyc               # zero-shot transfer across team sizes
-python eval_extrapolation.pyc           # extrapolation to 10v10 / 20v20
+python eval_extrapolation.pyc           # extrapolation to 8v8-20v20
+python eval_kmax_ablation.pyc           # token-budget (K_max=14) ablation
 python eval_baseline.pyc                # MAPPO / QMIX baselines
 python compute_pvalues.pyc              # Wilcoxon signed-rank p-values
 ```
