@@ -90,7 +90,7 @@ weights, no figures. See the dataset's own README for the file map.
 ## Citation
 
 If this code is used, please cite the paper; the companion dataset is
-deposited on ScienceDB at https://doi.org/10.57760/sciencedb.010uw .
+deposited on figshare at https://doi.org/10.6084/m9.figshare.33424381 .
 
 ## License
 

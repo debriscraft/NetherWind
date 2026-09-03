@@ -93,8 +93,8 @@ The complete training and evaluation logs behind every table and figure of
 the three papers (data only — no figures, no model weights) are published
 alongside this framework. Paper 1's dataset is on ScienceDB
 (https://doi.org/10.57760/sciencedb.46055); Paper 2's dataset is on ScienceDB
-(https://doi.org/10.57760/sciencedb.00zq1); Paper 3's dataset is on ScienceDB
-(https://doi.org/10.57760/sciencedb.010uw).
+(https://doi.org/10.57760/sciencedb.00zq1); Paper 3's dataset is on figshare
+(https://doi.org/10.6084/m9.figshare.33424381).
 
 ## Citation
 
